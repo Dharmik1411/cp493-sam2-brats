@@ -1,0 +1,14 @@
+case,region,mode,placement,step,direction,channels,noise,n_boxes,dice,hd95,over_prop
+BraTS2021_01426,WT,per-slice,largest,10,both,flair3,none,57,0.9085437353065197,3.3166247903554,0.0
+BraTS2021_01426,TC,per-slice,largest,10,both,flair3,none,40,0.8562769767655433,4.123105625617661,0.0
+BraTS2021_01426,ET,per-slice,largest,10,both,flair3,none,40,0.6116977147597858,7.0710678118654755,0.0
+BraTS2021_00611,WT,per-slice,largest,10,both,flair3,none,63,0.7816835781357175,8.306623862918075,0.0
+BraTS2021_00611,TC,per-slice,largest,10,both,flair3,none,35,0.9057520484209659,3.0,0.0
+BraTS2021_00611,ET,per-slice,largest,10,both,flair3,none,35,0.5863346751619525,4.242640687119285,0.0
+BraTS2021_00184,WT,per-slice,largest,10,both,flair3,none,59,0.8882175940978606,4.242640687119285,0.0
+BraTS2021_00184,TC,per-slice,largest,10,both,flair3,none,30,0.8650415256844048,3.4641016151377544,0.0
+BraTS2021_00184,ET,per-slice,largest,10,both,flair3,none,30,0.7243481644830717,5.0990195135927845,0.0
+BraTS2021_01102,WT,per-slice,largest,10,both,flair3,none,50,0.7886551465063861,8.602325267042627,0.0
+BraTS2021_01102,TC,per-slice,largest,10,both,flair3,none,37,0.9000578536303153,1.7320508075688772,0.0
+BraTS2021_01102,ET,per-slice,largest,10,both,flair3,none,37,0.7553809640723463,4.0,0.0
+BraTS2021_01551,WT,per-slice,largest,10,both,flair3,none,37,0.8846819445172793,2.8284271247461903,0.0

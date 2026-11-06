@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+.pytest_cache/
+data/
+scratch/
+*.zip
+*.tar
+*.bak
+.DS_Store

@@ -1,0 +1,4 @@
+case,region,mode,placement,step,direction,channels,noise,n_boxes,dice,hd95,over_prop
+BraTS2021_01426,WT,video,largest,10,both,flair3,none,1,0.8552510042317358,50.160243174063105,0.25
+BraTS2021_00611,WT,video,largest,10,both,flair3,none,1,0.4006363140232928,46.145422002885326,1.0
+BraTS2021_00184,WT,video,largest,10,both,flair3,none,1,0.8458771812974557,9.848857801796104,0.0

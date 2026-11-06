@@ -1,0 +1,8 @@
+numpy
+scipy
+nibabel
+pillow
+huggingface_hub
+torch>=2.5.1
+torchvision>=0.20.1
+SAM-2 @ git+https://github.com/facebookresearch/sam2.git

@@ -1,0 +1,14 @@
+case,region,mode,placement,step,direction,channels,noise,n_boxes,dice,hd95,over_prop
+BraTS2021_01426,WT,video,first-every,10,forward,flair3,none,6,0.8884788134117892,6.324555320336759,0.0
+BraTS2021_01426,TC,video,first-every,10,forward,flair3,none,4,0.5853626858886941,65.89537145564167,0.5
+BraTS2021_01426,ET,video,first-every,10,forward,flair3,none,4,0.38866670845608975,66.49060083951716,0.5
+BraTS2021_00611,WT,video,first-every,10,forward,flair3,none,7,0.7161759299044514,40.85339643163099,0.0
+BraTS2021_00611,TC,video,first-every,10,forward,flair3,none,4,0.8177359078168794,53.92404803766145,0.45
+BraTS2021_00611,ET,video,first-every,10,forward,flair3,none,4,0.5013767271103614,53.92404803766145,0.45
+BraTS2021_00184,WT,video,first-every,10,forward,flair3,none,6,0.8713762255694818,6.0,0.0
+BraTS2021_00184,TC,video,first-every,10,forward,flair3,none,3,0.8328652211362019,5.385164807134504,0.0
+BraTS2021_00184,ET,video,first-every,10,forward,flair3,none,3,0.6930568382167744,5.385164807134504,0.0
+BraTS2021_01102,WT,video,first-every,10,forward,flair3,none,5,0.7648045219029675,8.12403840463596,0.0
+BraTS2021_01102,TC,video,first-every,10,forward,flair3,none,4,0.7889932530758037,12.206555615733702,0.15
+BraTS2021_01102,ET,video,first-every,10,forward,flair3,none,4,0.645199496631875,12.206555615733702,0.15
+BraTS2021_01551,WT,video,first-every,10,forward,flair3,none,4,0.7307635064741778,19.952440476096967,0.5
