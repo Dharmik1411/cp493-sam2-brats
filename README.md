@@ -32,6 +32,8 @@ every slice. This repo uses Hiera-Small. Per-patient results for every run are i
 | `lora.py` | LoRA layers for the memory attention or the image encoder, rank matching, self-check (`python lora.py`) |
 | `train_lora.py` | trains one adapter on 8-slice clips from training patients |
 | `run.py` | `smoke` (check the install), `split` (make the patient split), `eval` (one setting to a CSV), `summary` |
+| `analyze.py` | paired comparisons between results files: Wilcoxon signed-rank, Holm correction, bootstrap 95% CI |
+| `make_figures.py`, `figures/` | the report's figures, made from `results/` |
 | `run_*.sh` | one script per experiment, listed below in the order they were run |
 | `splits_zia.json` | patient IDs: `test` (Dr. Zia's 150), `val` (30), `train` |
 | `members.txt`, `new_members.txt` | listing of the dataset archive, and the 330 extra patients unpacked for v2 |
@@ -95,6 +97,15 @@ results file). Times are on an Apple M2.
 
 On a Mac, put `caffeinate -i` in front so it does not sleep. To look at any results file:
 `python run.py summary results/<name>.csv`.
+
+The statistics in the report come from `analyze.py`, for example the main table:
+
+```bash
+python analyze.py --all results/zia_rp30_150.csv results/lora_encoder_rp30_150.csv \
+    results/lora_encoder_v2_rp30_150.csv results/zia_ceiling_150.csv
+```
+
+The figures: `python make_figures.py`.
 
 Main options of `run.py eval`: `--mode per-slice | video | reprompt`, `--step` (re-prompt interval),
 `--placement largest | middle | first-every`, `--norm slice` (FLAIR rescaled per slice from its 1st to 99th
