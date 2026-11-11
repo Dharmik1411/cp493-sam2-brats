@@ -33,8 +33,8 @@ def ci(x, rng):
 
 def fig_boxes(rng):
     """Mean Dice against boxes drawn per patient: what the adapter is worth in boxes."""
-    runs = [("zia_rp30_150", "Zero-shot, re-prompt every 30", ZERO_SHOT),
-            ("zia_ceiling_150", "Zero-shot, box on every slice", ZERO_SHOT),
+    runs = [("rp30_150", "Zero-shot, re-prompt every 30", ZERO_SHOT),
+            ("ceiling_150", "Zero-shot, box on every slice", ZERO_SHOT),
             ("lora_encoder_rp30_150", "LoRA v1, re-prompt every 30", LORA),
             ("lora_encoder_v2_rp30_150", "LoRA v2, re-prompt every 30", LORA)]
     fig, ax = plt.subplots(figsize=(3.5, 2.3))
@@ -60,7 +60,7 @@ def fig_boxes(rng):
 
 def fig_paired(rng):
     """Per-patient Dice with and without the v2 adapter, same 2.3 boxes per patient."""
-    a, b = dice("zia_rp30_150"), dice("lora_encoder_v2_rp30_150")
+    a, b = dice("rp30_150"), dice("lora_encoder_v2_rp30_150")
     cases = sorted(set(a) & set(b))
     x, y = np.array([a[c] for c in cases]), np.array([b[c] for c in cases])
     fig, ax = plt.subplots(figsize=(3.5, 3.0))

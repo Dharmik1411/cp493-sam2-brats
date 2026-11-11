@@ -35,7 +35,7 @@ every slice. This repo uses Hiera-Small. Per-patient results for every run are i
 | `analyze.py` | paired comparisons between results files: Wilcoxon signed-rank, Holm correction, bootstrap 95% CI |
 | `make_figures.py`, `figures/` | the report's figures, made from `results/` |
 | `run_*.sh` | one script per experiment, listed below in the order they were run |
-| `splits_zia.json` | patient IDs: `test` (Dr. Zia's 150), `val` (30), `train` |
+| `splits_base.json` | patient IDs: `test` (Dr. Zia's 150), `val` (30), `train` |
 | `members.txt`, `new_members.txt` | listing of the dataset archive, and the 330 extra patients unpacked for v2 |
 | `lora_*.pt`, `lora_*_log.csv` | trained adapters (about 0.5 MB each, each stores the patients it was trained on) and their loss per step |
 | `results/*.csv` | one row per patient: Dice, HD95, NSD, boxes used, over-propagation |
@@ -64,15 +64,15 @@ The scans are not in this repo.
 mkdir -p data
 unzip -p ~/Downloads/archive.zip BraTS2021_Training_Data.tar | tar -x -C data
 
-# or unpack only the patients used (the split is already in splits_zia.json; to check it,
+# or unpack only the patients used (the split is already in splits_base.json; to check it,
 # python run.py split --data members.txt --sample 150 --seed 42 --splits check.json  gives the same 150 test IDs)
-python -c "import json;[print('./'+n+'/') for n in json.load(open('splits_zia.json'))['test']]" > test.txt
+python -c "import json;[print('./'+n+'/') for n in json.load(open('splits_base.json'))['test']]" > test.txt
 grep -F -f test.txt members.txt > test_members.txt
 unzip -p ~/Downloads/archive.zip BraTS2021_Training_Data.tar | tar -x -C data -T test_members.txt
 unzip -p ~/Downloads/archive.zip BraTS2021_Training_Data.tar | tar -x -C data -T new_members.txt   # val + extra training
 ```
 
-`splits_zia.json` in this repo already holds the split used for every result. Notes on it:
+`splits_base.json` in this repo already holds the split used for every result. Notes on it:
 
 - `test`: 150 patients drawn with `random.Random(42).sample` from the sorted patient IDs. Never used for training.
 - `val`: 30 training-split patients that no adapter was trained on, used to choose between adapter versions
@@ -87,7 +87,7 @@ results file). Times are on an Apple M2.
 
 | Step | Command | What it gives | Time |
 |---|---|---|---|
-| 1 | `sh run_zia30.sh` | Dr. Zia's 3 zero-shot settings on the first 30 test patients | about 3 h |
+| 1 | `sh run_base_30.sh` | Dr. Zia's 3 zero-shot settings on the first 30 test patients | about 3 h |
 | 2 | `LR=1e-4 sh run_lora.sh` | H4: LoRA in memory attention vs image encoder, seed 0, tested on the same 30 | about 3.5 h |
 | 3 | `sh run_seeds.sh` | H4 repeated with training seeds 1 and 2 | about 8 h |
 | 4 | `sh run_150.sh` | zero-shot re-prompting, LoRA v1 and box on every slice on all 150 test patients | about 10 h |
@@ -101,8 +101,8 @@ On a Mac, put `caffeinate -i` in front so it does not sleep. To look at any resu
 The statistics in the report come from `analyze.py`, for example the main table:
 
 ```bash
-python analyze.py --all results/zia_rp30_150.csv results/lora_encoder_rp30_150.csv \
-    results/lora_encoder_v2_rp30_150.csv results/zia_ceiling_150.csv
+python analyze.py --all results/rp30_150.csv results/lora_encoder_rp30_150.csv \
+    results/lora_encoder_v2_rp30_150.csv results/ceiling_150.csv
 ```
 
 The figures: `python make_figures.py`.

@@ -5,12 +5,12 @@
 # 120 patients run per setting. If it stops, run the same command again: it carries on where it was.
 # About 10 hours on the M2.
 set -e
-for s in zia_rp30 lora_encoder_rp30 zia_ceiling; do
+for s in rp30 lora_encoder_rp30 ceiling; do
   [ -f results/${s}_150.csv ] || cp results/${s}_30.csv results/${s}_150.csv
 done
-COMMON="--data data --splits splits_zia.json --subset test --limit 150 --norm slice --regions WT --resume"
+COMMON="--data data --splits splits_base.json --subset test --limit 150 --norm slice --regions WT --resume"
 RP30="--mode reprompt --placement largest --direction both --step 30"
-python run.py eval $COMMON $RP30 --name zia_rp30_150
+python run.py eval $COMMON $RP30 --name rp30_150
 python run.py eval $COMMON $RP30 --lora lora_encoder.pt --name lora_encoder_rp30_150
-python run.py eval $COMMON --mode per-slice --name zia_ceiling_150
-python run.py summary results/zia_rp30_150.csv results/lora_encoder_rp30_150.csv results/zia_ceiling_150.csv
+python run.py eval $COMMON --mode per-slice --name ceiling_150
+python run.py summary results/rp30_150.csv results/lora_encoder_rp30_150.csv results/ceiling_150.csv

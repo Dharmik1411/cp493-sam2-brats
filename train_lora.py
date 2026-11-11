@@ -4,8 +4,8 @@ Each step takes `--clip` consecutive slices from inside a training patient's tum
 box on the first slice only, and runs SAM 2's own track_step frame by frame, so the memory carries the
 mask forward the same way it does at test time. Loss = 20 x focal + Dice per frame (as in SAM 2).
 
-python train_lora.py --data data --splits splits_zia.json --part memory_attention --steps 300 --out lora_memory.pt
-python train_lora.py --data data --splits splits_zia.json --part image_encoder   --steps 300 --out lora_encoder.pt
+python train_lora.py --data data --splits splits_base.json --part memory_attention --steps 300 --out lora_memory.pt
+python train_lora.py --data data --splits splits_base.json --part image_encoder   --steps 300 --out lora_encoder.pt
 """
 import argparse
 import json
@@ -95,7 +95,7 @@ def main():
 
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", required=True)
-    ap.add_argument("--splits", default="splits_zia.json", help="trains only on its 'train' patients")
+    ap.add_argument("--splits", default="splits_base.json", help="trains only on its 'train' patients")
     ap.add_argument("--part", required=True, choices=list(lora.TARGETS))
     ap.add_argument("--rank", type=int, default=0, help="0 = rank 8 for memory, size-matched rank for encoder")
     ap.add_argument("--model", default="facebook/sam2.1-hiera-small")

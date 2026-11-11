@@ -2,8 +2,8 @@
 test printed, and 95% bootstrap confidence intervals of the mean paired difference. Only patients present in both
 files are compared.
 
-python analyze.py results/zia_rp30_150.csv results/lora_encoder_v2_rp30_150.csv      each later file vs the first
-python analyze.py --all results/zia_rp30_150.csv results/lora_encoder_rp30_150.csv results/lora_encoder_v2_rp30_150.csv results/zia_ceiling_150.csv
+python analyze.py results/rp30_150.csv results/lora_encoder_v2_rp30_150.csv      each later file vs the first
+python analyze.py --all results/rp30_150.csv results/lora_encoder_rp30_150.csv results/lora_encoder_v2_rp30_150.csv results/ceiling_150.csv
 """
 import argparse
 import csv

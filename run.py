@@ -1,7 +1,7 @@
 """
 python run.py smoke                  check SAM 2 runs (no data needed)
 python run.py split --data DATA      fixed dev/test split
-python run.py split --data members.txt --sample 150 --seed 42 --splits splits_zia.json   Dr. Zia's 150 patients
+python run.py split --data members.txt --sample 150 --seed 42 --splits splits_base.json   Dr. Zia's 150 patients
 python run.py eval  --data DATA ...  run one setting, write results to CSV
 python run.py summary results/*.csv  mean ± std per file and region (like Table 2 in Dr. Zia's paper)
 """
