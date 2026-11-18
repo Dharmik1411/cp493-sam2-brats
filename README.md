@@ -34,6 +34,7 @@ every slice. This repo uses Hiera-Small. Per-patient results for every run are i
 | `run.py` | `smoke` (check the install), `split` (make the patient split), `eval` (one setting to a CSV), `summary` |
 | `analyze.py` | paired comparisons between results files: Wilcoxon signed-rank, Holm correction, bootstrap 95% CI |
 | `make_figures.py`, `figures/` | the report's figures, made from `results/` |
+| `analyze_h3.py` | H3: Dice for tight, medium and loose boxes in each mode, paired tests of the loose-box cost, and where over-propagation lands |
 | `run_*.sh` | one script per experiment, listed below in the order they were run |
 | `splits_base.json` | patient IDs: `test` (Dr. Zia's 150), `val` (30), `train` |
 | `members.txt`, `new_members.txt` | listing of the dataset archive, and the 330 extra patients unpacked for v2 |
@@ -94,6 +95,11 @@ results file). Times are on an Apple M2.
 | 5 | `sh run_improve.sh` | v2 adapter (450 steps, lr 3e-4, 412 patients), compared on the 30 val patients | about 6.5 h |
 | 6 | `sh run_v2_150.sh` | v2 on all 150 test patients | about 4.5 h |
 | 7 | `sh run_h3.sh` | H3: loose boxes at two levels, per-slice vs re-prompting, one box through the whole volume | about 8 h |
+| 8 | `sh run_mem_v2.sh` | memory adapter with v2's longer training, compared with encoder v2 on val and all 150 | about 8.5 h |
+| 9 | `sh run_h3_150.sh` | H3 loose and medium boxes, zero-shot and both v2 adapters, on all 150 (reuses the first 30) | about 16 h |
+| 10 | `sh run_spill.sh` | one box through the whole scan, recording how far past the tumour's ends the masks spill | about 4 h |
+| 11 | `sh run_h4_settle.sh` | H4 fairness check: memory adapter v1 on all 150, and memory trained long at the lower learning rate | about 12 h |
+| 11b | `kaggle/cp493_kaggle_h4.ipynb` on Kaggle (GPU T4 x2) | the same H4 runs on a free Kaggle GPU, after checking Kaggle matches the Mac on 30 patients | about 2 to 5 h |
 
 On a Mac, put `caffeinate -i` in front so it does not sleep. To look at any results file:
 `python run.py summary results/<name>.csv`.
@@ -107,12 +113,38 @@ python analyze.py --all results/rp30_150.csv results/lora_encoder_rp30_150.csv \
 
 The figures: `python make_figures.py`.
 
+The H3 tables and tests: `python analyze_h3.py` (all 150 patients where the files exist, else the first 30).
+
 Main options of `run.py eval`: `--mode per-slice | video | reprompt`, `--step` (re-prompt interval),
 `--placement largest | middle | first-every`, `--norm slice` (FLAIR rescaled per slice from its 1st to 99th
 percentile, as in Dr. Zia's paper), `--noise none | medium | low` (loose boxes), `--lora <weights.pt>`,
 `--subset test | val`, `--limit N`, `--resume`.
 
 Boxes are drawn from the ground-truth mask (no real users), so all numbers are upper bounds for real use.
+
+## Training details
+
+| | |
+|---|---|
+| Adapters | LoRA on the attention projections, everything else frozen; `B` starts at zero so the model is unchanged before training; scale 1 |
+| Memory adapter | memory attention `q, k, v, out` projections, rank 8, 118,784 trainable parameters |
+| Encoder adapter | image encoder (Hiera) `qkv, proj`, rank 3, 116,352 trainable parameters (rank picked to match the memory adapter) |
+| One training step | one clip of 8 consecutive slices from one random training patient, so **batch size 1 clip (8 slices)**; ground-truth box on the first slice only; SAM 2's own tracking step slice by slice |
+| Loss | per slice, 20 x focal (alpha 0.25, gamma 2) + soft Dice, averaged over the 8 slices; backward after each slice, so gradients add up over the clip; memory from earlier slices detached; gradient checkpointing to fit in memory |
+| Optimizer | AdamW, weight decay 0.01, constant learning rate |
+| Input | FLAIR in all 3 channels, each slice rescaled from its 1st to 99th percentile, resized to 1024 x 1024 |
+
+| Weights file | Part | Steps | Learning rate | Training patients | Seeds |
+|---|---|---|---|---|---|
+| `lora_memory.pt`, `_s1`, `_s2` | memory attention | 150 | 1e-4 | 112 | 0, 1, 2 |
+| `lora_encoder.pt`, `_s1`, `_s2` (v1) | image encoder | 150 | 1e-4 | 112 | 0, 1, 2 |
+| `lora_encoder_v2.pt` (v2) | image encoder | 450 | 3e-4 | 412 | 0 |
+| `lora_memory_v2.pt` (`run_mem_v2.sh`) | memory attention | 450 | 3e-4 | 412 | 0 |
+| `lora_memory_long_lowlr.pt` (`run_h4_settle.sh`) | memory attention | 450 | 1e-4 | 412 | 0 |
+
+"Training patients" come from the `train` list only. The 150 `test` patients are only ever used for testing, so
+"v2 on all 150" means v2 was trained on 412 other patients and then tested once on the 150. Each `.pt` file
+stores the list of patients it was trained on.
 
 ## Use of AI
 

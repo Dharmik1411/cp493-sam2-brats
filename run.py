@@ -41,6 +41,8 @@ def smoke(args):
     assert brats.over_propagation(gt, gt) == 0.0
     spill = gt.copy(); z = brats.tumour_slices(gt); spill[z[-1] + 1] = spill[z[-1] + 6] = gt[z[-1]]
     assert np.isnan(brats.fp_near_ends(gt, gt)) and brats.fp_near_ends(spill, gt) == 0.5  # 1 and 6 slices past the end
+    sp = brats.spill_profile(spill, gt)
+    assert (sp["spill_1_3"], sp["spill_4_10"], sp["spill_11_20"], sp["spill_max"]) == (0.5, 0.5, 0.0, 6) and brats.spill_profile(gt, gt)["spill_max"] == 0
     gappy = gt.copy(); gappy[22] = False  # a tumour with a gap must never get a box on an empty slice
     assert all(gappy[z].any() for z in brats.key_slices(gappy, "first-every", 2))
     assert brats.nsd(gt, gt) == 1.0 and brats.nsd(np.roll(gt, 3, axis=2), gt) < 1.0
@@ -87,7 +89,7 @@ def evaluate(args):
                    channels=args.channels, norm=args.norm, noise=args.noise)
     os.makedirs("results", exist_ok=True)
     path = f"results/{args.name}.csv"
-    fields = ["case", "region", *setting, "n_boxes", "dice", "hd95", "nsd", "over_prop", "fp_near"]
+    fields = ["case", "region", *setting, "n_boxes", "dice", "hd95", "nsd", "over_prop", "fp_near", *brats.SPILL_BINS, "spill_max"]
     old = list(csv.DictReader(open(path))) if args.resume and os.path.exists(path) else []
     for r in old:  # resume only the same setting, so rows from different runs never mix in one file
         assert all(r[k] == str(v) for k, v in setting.items()), f"{path} holds a different setting, use another --name"
@@ -128,7 +130,8 @@ def evaluate(args):
                     pred = runner.propagate(state, boxes, args.direction)
                 writer.writerow({"case": name, "region": region, **setting, "n_boxes": len(keys),
                                  "dice": brats.dice(pred, gt), "hd95": brats.hd95(pred, gt), "nsd": brats.nsd(pred, gt),
-                                 "over_prop": brats.over_propagation(pred, gt), "fp_near": brats.fp_near_ends(pred, gt)})
+                                 "over_prop": brats.over_propagation(pred, gt), "fp_near": brats.fp_near_ends(pred, gt),
+                                 **brats.spill_profile(pred, gt)})
             f.flush()
             print("done", name)
 

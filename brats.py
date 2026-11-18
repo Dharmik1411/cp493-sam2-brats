@@ -150,6 +150,21 @@ def fp_near_ends(pred, gt, k=3):
     return float(fp[past <= k].sum() / fp.sum()) if fp.sum() else float("nan")
 
 
+SPILL_BINS = {"spill_1_3": (1, 3), "spill_4_10": (4, 10), "spill_11_20": (11, 20), "spill_21p": (21, 10 ** 6)}
+
+
+def spill_profile(pred, gt):
+    """H3: where over-propagation lands. Share of the voxels predicted past the tumour's ends that sit 1-3, 4-10,
+    11-20 and 21+ slices past the nearer end (nan if none), plus spill_max: the furthest such slice (0 if none)."""
+    z, s = tumour_slices(gt), np.arange(gt.shape[0])
+    past = np.maximum(z[0] - s, s - z[-1])  # slices past the nearer end; <= 0 inside the tumour's extent
+    fp = pred.sum(axis=(1, 2)) * (past > 0)
+    total = fp.sum()
+    out = {k: float(fp[(past >= lo) & (past <= hi)].sum() / total) if total else float("nan") for k, (lo, hi) in SPILL_BINS.items()}
+    out["spill_max"] = int(past[fp > 0].max()) if total else 0
+    return out
+
+
 def over_propagation(pred, gt, margin=10):
     """Share of tumour-free slices (within `margin` of the tumour's ends) that still got a mask."""
     z = tumour_slices(gt)
